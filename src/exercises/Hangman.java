@@ -1,5 +1,9 @@
 package exercises;
 
+import java.util.*; 
+
+import java.util.List;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -13,23 +17,39 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class Hangman extends KeyAdapter {
+import examples.FileHelper;
 
+public class Hangman extends KeyAdapter {
+	
+	int input = 0;
+	boolean win = false;
+	int listSize = 0;
+	String word = "";
+	int randomIndex = 0;
+	Random randomGenerator = new Random();
 	Stack<String> puzzles = new Stack<String>();
 	ArrayList<JLabel> boxes = new ArrayList<JLabel>();
 	int lives = 9;
 	JLabel livesLabel = new JLabel("" + lives);
-
+	
 	public static void main(String[] args) {
 		Hangman hangman = new Hangman();
 		hangman.addPuzzles();
 		hangman.createUI();
 	}
-
-	private void addPuzzles() {
-		puzzles.push("defenestrate");
-		puzzles.push("fancypants");
-		puzzles.push("elements");
+	
+	public List<String> loadWords() {
+		List<String> wordList = FileHelper.loadFileContentsIntoArrayList("resource/words.txt");
+		return wordList;
+	}
+	
+	public void addPuzzles() { 
+		List<String> listWord = loadWords();
+		for (int i = 0; i < 10; i++) {
+			int index = new Random().nextInt(listWord.size());
+			word = listWord.get(index);	
+			puzzles.push(word.toLowerCase().trim());
+		}
 	}
 
 	JPanel panel = new JPanel();
@@ -47,13 +67,13 @@ public class Hangman extends KeyAdapter {
 		frame.addKeyListener(this);
 	}
 
-	private void loadNextPuzzle() {
+	public void loadNextPuzzle() {
 		removeBoxes();
 		lives = 9;
 		livesLabel.setText("" + lives);
 		puzzle = puzzles.pop();
 		System.out.println("puzzle is now " + puzzle);
-		createBoxes();
+		createBoxes();	
 	}
 
 	public void keyTyped(KeyEvent arg0) {
@@ -65,16 +85,26 @@ public class Hangman extends KeyAdapter {
 		}
 	}
 
-	private void updateBoxesWithUserInput(char keyChar) {
+	public void updateBoxesWithUserInput(char keyChar) {
 		boolean gotOne = false;
 		for (int i = 0; i < puzzle.length(); i++) {
 			if (puzzle.charAt(i) == keyChar) {
 				boxes.get(i).setText("" + keyChar);
 				gotOne = true;
+				input++;
+				if(gotOne = true) {
+					if(boxes.size() == input) {
+						input = 0;
+						loadNextPuzzle();	
+					}
+				}
+				
 			}
 		}
-		if (!gotOne)
+		
+		if (!gotOne) {
 			livesLabel.setText("" + --lives);
+		}
 	}
 
 	void createBoxes() {
