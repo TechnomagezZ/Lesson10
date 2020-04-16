@@ -54,7 +54,7 @@ public class Hangman extends KeyAdapter {
 		for (int i = 0; i < 10; i++) {
 			try {
 				int index = new Random().nextInt(listWord.size());
-				word = "@b2"; //listWord.get(index);
+				word = listWord.get(index);
 		    	for (int j = 0; j < word.length(); j++) {
 		    		currentCharacter = word.charAt(j);
 		    		if (Character.isDigit(currentCharacter)) {
@@ -124,6 +124,7 @@ public class Hangman extends KeyAdapter {
 		updateBoxesWithUserInput(arg0.getKeyChar());
 		if (lives == 0) {
 			playDeathKnell();
+			puzzleCount++;
 			loadNextPuzzle();
 		}
 	}
