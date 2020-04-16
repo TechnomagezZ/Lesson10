@@ -21,6 +21,12 @@ import examples.FileHelper;
 
 public class Hangman extends KeyAdapter {
 	
+	boolean invalidWord = false;
+	String specialChars = "~`!@#$%^&*()-_=+\\|[{]};:'\",<.>/?";
+	char currentCharacter;
+	boolean numberPresent = false;
+    boolean specialCharacterPresent = false;
+	int puzzleCount = 0;
 	int input = 0;
 	boolean win = false;
 	int listSize = 0;
@@ -46,9 +52,32 @@ public class Hangman extends KeyAdapter {
 	public void addPuzzles() { 
 		List<String> listWord = loadWords();
 		for (int i = 0; i < 10; i++) {
-			int index = new Random().nextInt(listWord.size());
-			word = listWord.get(index);	
-			puzzles.push(word.toLowerCase().trim());
+			try {
+				int index = new Random().nextInt(listWord.size());
+				word = "@b2"; //listWord.get(index);
+		    	for (int j = 0; j < word.length(); j++) {
+		    		currentCharacter = word.charAt(j);
+		    		if (Character.isDigit(currentCharacter)) {
+		    			numberPresent = true;
+		    		}
+		    		if (specialChars.contains(String.valueOf(currentCharacter))) {
+		    			specialCharacterPresent = true;
+		    		}
+		    		
+		    	}
+		    }
+			finally {
+			}	
+			if (numberPresent || specialCharacterPresent == true) {
+				int index = new Random().nextInt(listWord.size());
+    			System.out.println("Word " + word + " contains a number or Special characters now going to next word.");
+    			word = listWord.get(index);
+    			invalidWord = false;
+    		}
+		    
+		    if (invalidWord == false) {
+		    		puzzles.push(word.toLowerCase().trim());
+		    }
 		}
 	}
 
@@ -65,6 +94,20 @@ public class Hangman extends KeyAdapter {
 		frame.setVisible(true);
 		frame.pack();
 		frame.addKeyListener(this);
+	}
+	private void resetUI() {
+		panel.removeAll();
+		panel.add(livesLabel);
+		panel.updateUI();
+		
+			
+		if(puzzleCount < 3) {
+			loadNextPuzzle();
+		}
+		else {
+			System.out.println("Congrats you beat them all!");
+			System.exit(5);
+		}
 	}
 
 	public void loadNextPuzzle() {
@@ -95,10 +138,10 @@ public class Hangman extends KeyAdapter {
 				if(gotOne = true) {
 					if(boxes.size() == input) {
 						input = 0;
-						loadNextPuzzle();	
+						puzzleCount++;
+						resetUI();
 					}
-				}
-				
+				}	
 			}
 		}
 		
