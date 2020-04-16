@@ -125,7 +125,7 @@ public class Hangman extends KeyAdapter {
 		if (lives == 0) {
 			playDeathKnell();
 			puzzleCount++;
-			loadNextPuzzle();
+			resetUI();
 		}
 	}
 
