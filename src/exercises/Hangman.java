@@ -15,6 +15,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import examples.FileHelper;
@@ -49,7 +50,7 @@ public class Hangman extends KeyAdapter {
 		return wordList;
 	}
 	
-	public void addPuzzles() { 
+	public void addPuzzles() throws SpecialCharacterException{ 
 		List<String> listWord = loadWords();
 		for (int i = 0; i < 10; i++) {
 			try {
@@ -65,19 +66,25 @@ public class Hangman extends KeyAdapter {
 		    		}
 		    		
 		    	}
+		    	if (numberPresent || specialCharacterPresent == true) {
+		    		invalidWord = false;
+		    		throw new SpecialCharacterException();
+	    		}
 		    }
+			catch(SpecialCharacterException e){
+				JOptionPane.showMessageDialog(null, "Word " + word + " contains a number or Special characters now going to next word.");
+						
+			}
 			finally {
-			}	
-			if (numberPresent || specialCharacterPresent == true) {
-				int index = new Random().nextInt(listWord.size());
-    			System.out.println("Word " + word + " contains a number or Special characters now going to next word.");
-    			word = listWord.get(index);
-    			invalidWord = false;
-    		}
-		    
-		    if (invalidWord == false) {
+				if (invalidWord == false) {
+					int index = new Random().nextInt(listWord.size());
+	    			word = listWord.get(index);
 		    		puzzles.push(word.toLowerCase().trim());
 		    }
+			}	
+			
+		    
+		    
 		}
 	}
 
